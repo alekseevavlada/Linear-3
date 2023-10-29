@@ -78,7 +78,7 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        # Функция glRotatef умножает текущую матрицу на матрицу вращения. Ее параметрами являются угол вращения и координаты x, y, и z.
+
         glRotatef(1, 3, 1, 1)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         cube()
