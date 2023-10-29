@@ -1,89 +1,69 @@
 import pygame
-from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+vertices = ((-1, 1, -1),
+            (1, 1, -1),
+            (1, -1, -1),
+            (-1, -1, -1),
+            (-1, 1, 1),
+            (1, 1, 1),
+            (1, -1, 1),
+            (-1, -1, 1)
+            )
 
-def cube():
-    vertices = (
-        (1, -1, -1),
-        (1, 1, -1),
-        (-1, 1, -1),
-        (-1, -1, -1),
-        (1, -1, 1),
-        (1, 1, 1),
-        (-1, -1, 1),
-        (-1, 1, 1)
-    )
+colors = ((1.0, 0.0, 0.0),
+          (0.0, 1.0, 0.0),
+          (0.0, 0.0, 1.0),
+          (1.0, 1.0, 1.0),
+          (1.0, 0.0, 0.0),
+          (0.0, 1.0, 0.0),
+          (0.0, 0.0, 1.0),
+          (1.0, 1.0, 1.0)
+          )
 
-    edges = (
-        (0, 1),
-        (0, 3),
-        (0, 4),
-        (2, 1),
-        (2, 3),
-        (2, 7),
-        (6, 3),
-        (6, 4),
-        (6, 7),
-        (5, 1),
-        (5, 4),
-        (5, 7)
-    )
+cube = ((0, 1, 2),
+        (2, 3, 0),
+        (1, 0, 4),
+        (4, 5, 1),
+        (3, 2, 6),
+        (6, 7, 3),
+        (4, 0, 3),
+        (3, 7, 4),
+        (1, 5, 6),
+        (6, 2, 1),
+        (5, 4, 7),
+        (7, 6, 5)
+        )
 
-    surfaces = (
-        (0, 1, 2, 3),
-        (3, 2, 7, 6),
-        (6, 7, 5, 4),
-        (4, 5, 1, 0),
-        (1, 5, 7, 2),
-        (4, 0, 3, 6)
 
-    )
-
-    colors = (
-        (1, 1, 1),
-        (1, 0, 0),
-        (0, 1, 0),
-        (0, 0, 1),
-        (1, 1, 0),
-        (1, 0, 1),
-    )
-
-    glBegin(GL_QUADS)
-    for surface in surfaces:
-        x = 0
-        for vertex in surface:
-            x += 1
-            glColor3fv(colors[x])
-            glVertex3fv(vertices[vertex])
-
+def draw3D(obj):
+    glBegin(GL_TRIANGLES)
+    for edge in obj:
+        for v in edge:
+            glColor3fv(colors[v])
+            glVertex3fv(vertices[v])
     glEnd()
 
 
-def main():
-    pygame.init()
-    pygame.display.set_caption('Rotating Cube')
-    display = (800, 400)
-    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-
-    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    # Умножение текущей матрицы на матрицу перехода
-    glTranslatef(0.0, 0.0, -5)
-
-    glRotatef(0, 0, 0, 0)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-        glRotatef(1, 3, 1, 1)
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        cube()
-        pygame.display.flip()
-        pygame.time.wait(10)
-
-
-main()
+pygame.init()
+fpsClock = pygame.time.Clock()
+ratio = 8.0 / 6.0
+pygame.display.set_mode((800, 600), pygame.DOUBLEBUF | pygame.OPENGL)
+pygame.display.set_caption("Rotating Cube")
+glViewport(0, 0, 800, 600)
+running = True
+gluPerspective(30.0, ratio, 0.1, 50.0)
+glTranslatef(0.0, 0.0, -10.0)
+glClearColor(0.0, 0.0, 0.0, 1.0)
+glEnable(GL_DEPTH_TEST)
+while running:
+    fpsClock.tick(30)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glRotatef(1, 1, 1, 1)
+    draw3D(cube)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    pygame.display.flip()
+pygame.quit()
